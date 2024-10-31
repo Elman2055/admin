@@ -28,11 +28,7 @@ const AuthAdmin = () => {
     <>
       <Loader isOpen={loader} />
       <div className="w-full h-[100vh] flex flex-col justify-center items-center gap-7 font-jost">
-        <img
-          src={logo}
-          alt="logo"
-          className="w-[30%] desktop:w-[23%] object-cover"
-        />
+        <img src={logo} alt="logo" className="w-[30%] desktop:w-[23%] object-cover" />
         <form
           className="w-[30%] desktop:w-[23%] flex flex-col gap-5 text-xl desktop2:text-3xl"
           onSubmit={onSubmit}
@@ -49,11 +45,7 @@ const AuthAdmin = () => {
             placeholder="Пароль"
             className="bg-transparent text-white py-2 outline-none border-b-2 border-b-gray-500 focus:border-b-white"
           />
-          {error && (
-            <p className="text-center text-red-500 text-base desktop:text-lg desktop2:text-2xl">
-              {error}
-            </p>
-          )}
+          {error && (<p className="text-center text-red-500 text-base desktop:text-lg desktop2:text-2xl">{error}</p>)}
           <button
             className="bg-white py-1.5 desktop2:py-3 hover:opacity-50 transition-all duration-300"
             type="submit"

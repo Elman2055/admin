@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import BlogPage from "../components/BlogPage";
 import AdminApi from "../services/adminApi";
 import { TProducts } from "../types/types.data";
 import { useAppContext } from "../components/AppContext";
 import Loader from "../components/ui/Loader";
+import PageList from "../components/ux/PageList";
 
 const BlogPageContainer = () => {
   const [products, setProducts] = useState<TProducts[]>([]);
@@ -23,15 +23,19 @@ const BlogPageContainer = () => {
   const { loadPage, setLoadPage } = useAppContext();
 
   const getProducts = async (page: number) => {
-    // setLoader(true);
+    setLoader(true);
     const data = await AdminApi.getProducts("blog", page);
     if (data) {
-      setTotalPages(data.totalPages);
-      setQuantity(data.totalCount);
-      const filtered = data.blogs.filter((el: TProducts) =>
-        el.title.toLowerCase().includes(searchValue.toLowerCase())
-      );
-      setProducts(filtered);
+      try {
+        setTotalPages(data.totalPages);
+        setQuantity(data.totalCount || 0);
+        const filtered = data.blogs.filter((el: TProducts) =>
+          el.title.toLowerCase().includes(searchValue.toLowerCase())
+        );
+        setProducts(filtered);
+      } catch (e) {
+        setLoader(false);
+      }
     }
     setLoader(false);
   };
@@ -39,7 +43,7 @@ const BlogPageContainer = () => {
   const onDelete = async (id: number) => {
     setLoader(true);
     await AdminApi.onDelete("blog", id);
-    setLoadPage(true);
+    setLoadPage(!loadPage);
     setLoader(false);
   };
 
@@ -76,7 +80,10 @@ const BlogPageContainer = () => {
   return (
     <>
       <Loader isOpen={loader} />
-      <BlogPage
+      <PageList
+        title="Блог"
+        image="blog"
+        isDate={true}
         quantity={quantity}
         products={products}
         totalPages={totalPages}

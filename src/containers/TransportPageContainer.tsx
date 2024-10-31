@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import AdminApi from "../services/adminApi";
 import { TProducts } from "../types/types.data";
-import TransportPage from "../components/TransportPage";
 import { useAppContext } from "../components/AppContext";
 import Loader from "../components/ui/Loader";
+import PageList from "../components/ux/PageList";
 
 const TransportPageContainer = () => {
   const [products, setProducts] = useState<TProducts[]>([]);
@@ -26,12 +26,16 @@ const TransportPageContainer = () => {
     setLoader(true);
     const data = await AdminApi.getProducts("transport", page);
     if (data) {
-      setTotalPages(data.totalPages);
-      setQuantity(data.totalCount);
-      const filtered = data.transports.filter((el: TProducts) => {
-        return el.title.toLowerCase().includes(searchValue.toLowerCase());
-      });
-      setProducts(filtered);
+      try {
+        setTotalPages(data.totalPages);
+        setQuantity(data.totalCount || 0);
+        const filtered = data.transports.filter((el: TProducts) => {
+          return el.title.toLowerCase().includes(searchValue.toLowerCase());
+        });
+        setProducts(filtered);
+      } catch (e) {
+        setLoader(false);
+      }
     }
     setLoader(false);
   };
@@ -39,6 +43,7 @@ const TransportPageContainer = () => {
   const onDelete = async (id: number) => {
     setLoader(true);
     await AdminApi.onDelete("transport", id);
+    setLoadPage(!loadPage);
     setLoader(false);
   };
 
@@ -56,9 +61,8 @@ const TransportPageContainer = () => {
       }))[0];
       setOldValues(values);
     }
-    setLoadPage(true);
+    setLoadPage(!loadPage);
     setLoader(false);
-    setLoadPage(false);
   };
 
   useEffect(() => {
@@ -73,13 +77,12 @@ const TransportPageContainer = () => {
     };
   }, [currentPage, searchValue, loadPage]);
 
-  console.log(loadPage);
-  
-
   return (
     <>
       <Loader isOpen={loader} />
-      <TransportPage
+      <PageList
+        title="Транспорт"
+        image="transport"
         quantity={quantity}
         products={products}
         totalPages={totalPages}

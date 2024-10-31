@@ -44,9 +44,7 @@ const PageList = ({
       <div className="w-[90%] mx-auto font-jost">
         <p className="text-center text-white text-2xl desktop2:text-4xl">
           {title}
-          <span className="text-gray-400 text-base desktop:text-xl ml-2">
-            всего {quantity} шт.
-          </span>
+          <span className="text-gray-400 text-base desktop:text-xl ml-2">всего {quantity} шт.</span>
         </p>
         <div className="flex justify-center my-5">
           <div className="w-[30%] relative">
@@ -69,25 +67,12 @@ const PageList = ({
               />
               <div className="w-[90%] absolute bottom-4 flex justify-between items-end ml-[5%]">
                 <div>
-                  <p className="text-base desktop:text-lg desktop2:text-2xl font-bold">
-                    {el.title}
-                  </p>
-                  {isDate && (
-                    <p className="text-sm desktop:text-base desktop2:text-lg">
-                      {new Date(el.date).toLocaleString()}
-                    </p>
-                  )}
-                  {!isDate && (
-                    <p className="text-sm desktop:text-base desktop2:text-lg">
-                      {el.price} тг
-                    </p>
-                  )}
+                  <p className="text-base desktop:text-lg desktop2:text-2xl font-bold">{el.title}</p>
+                  {isDate && (<p className="text-sm desktop:text-base desktop2:text-lg">{new Date(el.date).toLocaleString()}</p>)}
+                  {!isDate && (<p className="text-sm desktop:text-base desktop2:text-lg">{el.price} тг</p>)}
                 </div>
                 <div className="flex gap-4 text-lg desktop:text-xl desktop2:text-3xl mb-2">
-                  <RiDeleteBin6Line
-                    className="cursor-pointer"
-                    onClick={() => onDelete(el.id)}
-                  />
+                  <RiDeleteBin6Line className="cursor-pointer" onClick={() => onDelete(el.id)} />
                   <FaRegEdit
                     className="cursor-pointer"
                     onClick={() => {
@@ -112,10 +97,8 @@ const PageList = ({
               sx={{
                 "& .MuiPaginationItem-root:not(.Mui-selected):not(.Mui-disabled), & .MuiPaginationItem-root.Mui-disabled":
                   { border: "1px solid white", color: "grey.500" },
-                "& .MuiPaginationItem-root.Mui-selected": {
-                  backgroundColor: "white",
-                  color: "black",
-                },
+                "& .MuiPaginationItem-root.Mui-selected":
+                  { backgroundColor: "white", color: "black", },
               }}
             />
           )}

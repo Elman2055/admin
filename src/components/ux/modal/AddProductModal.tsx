@@ -19,12 +19,10 @@ const AddProductModal = ({
   editID,
 }: TAddModal) => {
   const [images, setImages] = useState<string[]>([]);
-  const [activeBtn, setActiveBtn] = useState<number>(
-    active === "blog" ? 1 : active === "spares" ? 2 : 0
-  );
+  const [activeBtn, setActiveBtn] = useState<number>(active === "blog" ? 1 : active === "spares" ? 2 : 0);
   const [error, setError] = useState<string>("");
   const [loader, setLoader] = useState<boolean>(false);
-  const { setLoadPage } = useAppContext();
+  const { loadPage, setLoadPage } = useAppContext();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -41,27 +39,16 @@ const AddProductModal = ({
     const formData = new FormData(target);
 
     if (!isEdit) {
-      const data = await AdminApi.onAddProducts(
-        `${
-          activeBtn === 0 ? "transport" : activeBtn === 1 ? "blog" : "spares"
-        }`,
-        formData
-      );
+      const data = await AdminApi.onAddProducts(`${activeBtn === 0 ? "transport" : activeBtn === 1 ? "blog" : "spares"}`,formData);
       if (!data.success) setError(data.message);
     } else {
-      const data = await AdminApi.onEdit(
-        `${
-          activeBtn === 0 ? "transport" : activeBtn === 1 ? "blog" : "spares"
-        }`,
-        editID as number,
-        formData
-      );
+      const data = await AdminApi.onEdit(`${activeBtn === 0 ? "transport" : activeBtn === 1 ? "blog" : "spares"}`,editID as number,formData);
       if (!data.success) setError(data.message);
     }
 
+    setLoadPage(!loadPage);
     setLoader(false);
     setIsOpen(false);
-    setLoadPage(true);
     setImages([]);
     target.reset();
   };
@@ -82,16 +69,12 @@ const AddProductModal = ({
               className=" absolute top-6 left-5 text-2xl desktop:text-3xl desktop2:text-4xl cursor-pointer"
               onClick={() => setIsOpen(false)}
             />
-            <p className="text-2xl desktop:text-3xl desktop2:text-4xl">
-              Добавить запись
-            </p>
+            <p className="text-2xl desktop:text-3xl desktop2:text-4xl">Добавить запись</p>
             <div className="flex justify-center gap-3 my-4">
               {["Транспорт", "Блог", "Запчасти"].map((el, index) => (
                 <button
                   key={index}
-                  className={`px-3 py-1 text-black bg-white desktop2:text-xl rounded-lg ${
-                    activeBtn === index ? "" : "opacity-40"
-                  }`}
+                  className={`px-3 py-1 text-black bg-white desktop2:text-xl rounded-lg ${activeBtn === index ? "" : "opacity-40"}`}
                   onClick={() => setActiveBtn(index)}
                 >
                   {el}
@@ -100,12 +83,7 @@ const AddProductModal = ({
             </div>
             <form className="flex flex-col gap-3" onSubmit={onSubmit}>
               <div
-                className={`w-[35vw] desktop:w-[27vw] h-[25vh] border-2 border-white rounded-lg flex items-center justify-center cursor-pointer mb-5 relative ${
-                  images.length > 0 || imageValue
-                    ? "border-none"
-                    : "border-dashed"
-                }`}
-              >
+                className={`w-[35vw] desktop:w-[27vw] h-[25vh] border-2 border-white rounded-lg flex items-center justify-center cursor-pointer mb-5 relative ${images.length > 0 || imageValue? "border-none": "border-dashed"}`}>
                 {images.length > 0 || imageValue ? (
                   <>
                     {images.length > 0 ? (
@@ -126,9 +104,7 @@ const AddProductModal = ({
                     )}
                   </>
                 ) : (
-                  <div className="bg-white rounded-full p-3">
-                    <CiImageOn className="text-4xl text-gray-400" />
-                  </div>
+                  <div className="bg-white rounded-full p-3"><CiImageOn className="text-4xl text-gray-400" /></div>
                 )}
                 <input
                   type="file"
@@ -138,46 +114,18 @@ const AddProductModal = ({
                   onChange={handleFileChange}
                 />
               </div>
-              {(activeBtn !== 1
-                ? ["title", "price", "category", "description"]
-                : ["title", "description"]
-              ).map((el, index) => (
+              {(activeBtn !== 1 ? ["title", "price", "category", "description"] : ["title", "description"]).map((el, index) => (
                 <input
                   key={index}
                   type="text"
                   name={el}
-                  placeholder={
-                    el === "title"
-                      ? "Название"
-                      : el === "price"
-                      ? "Цена"
-                      : el === "category"
-                      ? "Категория"
-                      : "Описание"
-                  }
-                  defaultValue={
-                    el === "title"
-                      ? titleValue
-                      : el === "price"
-                      ? priceValue
-                      : el === "category"
-                      ? categoryValue
-                      : descriptionValue
-                  }
-                  className={`bg-transparent border-b-2 border-gray-500 focus:border-white outline-none desktop2:text-xl py-1 ${
-                    el === "description" ? "pb-10" : ""
-                  }`}
+                  placeholder={el === "title"? "Название": el === "price"? "Цена": el === "category"? "Категория": "Описание"}
+                  defaultValue={el === "title"? titleValue: el === "price"? priceValue: el === "category"? categoryValue: descriptionValue}
+                  className={`bg-transparent border-b-2 border-gray-500 focus:border-white outline-none desktop2:text-xl py-1 ${el === "description" ? "pb-10" : ""}`}
                 />
               ))}
-              {error && (
-                <p className="text-red-500 desktop2:text-xl text-center">
-                  {error}
-                </p>
-              )}
-              <button
-                type="submit"
-                className="bg-white text-black py-2 desktop2:text-xl"
-              >
+              {error && (<p className="text-red-500 desktop2:text-xl text-center">{error}</p>)}
+              <button type="submit" className="bg-white text-black py-2 desktop2:text-xl">
                 Добавить
               </button>
             </form>

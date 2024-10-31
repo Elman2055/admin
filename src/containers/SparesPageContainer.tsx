@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import AdminApi from "../services/adminApi";
 import { TProducts } from "../types/types.data";
-import SparesPage from "../components/SparesPage";
 import { useAppContext } from "../components/AppContext";
 import Loader from "../components/ui/Loader";
+import PageList from "../components/ux/PageList";
 
 const SparesPageContainer = () => {
   const [products, setProducts] = useState<TProducts[]>([]);
@@ -26,12 +26,16 @@ const SparesPageContainer = () => {
     setLoader(true);
     const data = await AdminApi.getProducts("spares", page);
     if (data) {
-      setTotalPages(data.totalPages);
-      setQuantity(data.totalCount);
-      const filtered = data.spares.filter((el: TProducts) => {
-        return el.title.toLowerCase().includes(searchValue.toLowerCase());
-      });
-      setProducts(filtered);
+      try {
+        setTotalPages(data.totalPages);
+        setQuantity(data.totalCount || 0);
+        const filtered = data.spares.filter((el: TProducts) => {
+          return el.title.toLowerCase().includes(searchValue.toLowerCase());
+        });
+        setProducts(filtered);
+      } catch (e) {
+        setLoader(false);
+      }
     }
     setLoader(false);
   };
@@ -39,7 +43,7 @@ const SparesPageContainer = () => {
   const onDelete = async (id: number) => {
     setLoader(true);
     await AdminApi.onDelete("spares", id);
-    setLoadPage(true);
+    setLoadPage(!loadPage);
     setLoader(false);
   };
 
@@ -57,7 +61,7 @@ const SparesPageContainer = () => {
       }))[0];
       setOldValues(values);
     }
-    setLoadPage(true);
+    setLoadPage(!loadPage);
     setLoader(false);
   };
 
@@ -76,7 +80,9 @@ const SparesPageContainer = () => {
   return (
     <>
       <Loader isOpen={loader} />
-      <SparesPage
+      <PageList
+        title="Запчасти"
+        image="spares"
         quantity={quantity}
         products={products}
         totalPages={totalPages}

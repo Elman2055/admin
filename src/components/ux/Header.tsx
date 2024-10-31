@@ -13,11 +13,7 @@ const Header = () => {
       <MenuModal isOpen={isOpen} setIsOpen={setIsOpen} onOpenAddModal={() => setIsAddModal(true)}/>
       <AddProductModal isOpen={isAddModal} setIsOpen={setIsAddModal}/>
       <div className="flex justify-between items-center p-5 text-white">
-        <img
-          src={logo}
-          alt="logo"
-          className="w-[16%] desktop:w-[12%] object-cover"
-        />
+        <img src={logo} alt="logo" className="w-[16%] desktop:w-[12%] object-cover" />
         <div className="flex items-center gap-2">
           <p className="font-bold desktop2:text-2xl">ADMIN</p>
           <HiMiniBars3
