@@ -41,7 +41,7 @@ const PageList = ({
         editID={editId}
         isEdit={editId ? true : false}
       />
-      <div className="w-[90%] mx-auto font-jost">
+      <div className="w-[90%] desktop:w-[75%] mx-auto font-jost">
         <p className="text-center text-white text-2xl desktop2:text-4xl">
           {title}
           <span className="text-gray-400 text-base desktop:text-xl ml-2">всего {quantity} шт.</span>
@@ -86,8 +86,8 @@ const PageList = ({
             </div>
           ))}
         </div>
-        <div className="flex justify-center py-10">
-          {totalPages > 1 && (
+        {totalPages > 1 && (
+          <div className="flex justify-center pt-5">
             <Pagination
               count={totalPages}
               page={currentPage}
@@ -101,8 +101,8 @@ const PageList = ({
                   { backgroundColor: "white", color: "black", },
               }}
             />
+          </div>
           )}
-        </div>
       </div>
     </>
   );

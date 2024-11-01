@@ -61,7 +61,7 @@ const BlogPageContainer = () => {
       }))[0];
       setOldValues(values);
     }
-    setLoadPage(true);
+    setLoadPage(!loadPage);
     setLoader(false);
   };
 

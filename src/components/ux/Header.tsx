@@ -12,12 +12,12 @@ const Header = () => {
     <>
       <MenuModal isOpen={isOpen} setIsOpen={setIsOpen} onOpenAddModal={() => setIsAddModal(true)}/>
       <AddProductModal isOpen={isAddModal} setIsOpen={setIsAddModal}/>
-      <div className="flex justify-between items-center p-5 text-white">
-        <img src={logo} alt="logo" className="w-[16%] desktop:w-[12%] object-cover" />
+      <div className="flex justify-between items-center p-3 text-white">
+        <img src={logo} alt="logo" className="w-[10%] desktop:w-[8%] object-cover" />
         <div className="flex items-center gap-2">
-          <p className="font-bold desktop2:text-2xl">ADMIN</p>
+          <p className="font-bold desktop2:text-lg">ADMIN</p>
           <HiMiniBars3
-            className="text-2xl desktop:text-3xl desktop2:text-5xl cursor-pointer"
+            className="text-2xl desktop:text-2xl desktop2:text-3xl cursor-pointer"
             onClick={() => setIsOpen(true)}
           />
         </div>
