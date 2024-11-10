@@ -126,7 +126,7 @@ const AddProductModal = ({
               ))}
               {error && (<p className="text-red-500 desktop2:text-xl text-center">{error}</p>)}
               <button type="submit" className="bg-white text-black py-2 desktop2:text-xl">
-                Добавить
+                {isEdit ? "Редактировать" : "Добавить"}
               </button>
             </form>
           </div>

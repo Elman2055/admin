@@ -1,6 +1,6 @@
 class AdminApi {
   static API_BASE_URL = "https://batyssp.kz/api/v1";
-  static TOKEN = localStorage.getItem("admin_token");
+  static getToken = () => localStorage.getItem("admin_token");
 
   static onLoginAdmin = async (auth: {}) => {
     try {
@@ -38,7 +38,7 @@ class AdminApi {
       const response = await fetch(url, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${AdminApi.TOKEN}`,
+          Authorization: `Bearer ${AdminApi.getToken()}`,
         },
         body: product,
       });
@@ -57,7 +57,7 @@ class AdminApi {
     const response = await fetch(url, {
       method: "DELETE",
       headers: {
-        Authorization: `Bearer ${AdminApi.TOKEN}`,
+        Authorization: `Bearer ${AdminApi.getToken()}`,
       },
     });
     const data = await response.json();
@@ -69,7 +69,7 @@ class AdminApi {
     const url = `${AdminApi.API_BASE_URL}/${link}/${id}`;
     const response = await fetch(url, {
       headers: {
-        Authorization: `Bearer ${AdminApi.TOKEN}`,
+        Authorization: `Bearer ${AdminApi.getToken()}`,
       },
     });
     const data = await response.json();
@@ -82,7 +82,7 @@ class AdminApi {
     const response = await fetch(url, {
       method: "PATCH",
       headers: {
-        Authorization: `Bearer ${AdminApi.TOKEN}`,
+        Authorization: `Bearer ${AdminApi.getToken()}`,
       },
       body: product,
     });

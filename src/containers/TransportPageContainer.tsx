@@ -18,6 +18,7 @@ const TransportPageContainer = () => {
   const [totalPages, setTotalPages] = useState<number>(1);
   const [quantity, setQuantity] = useState<number>(0);
   const [searchValue, setSearchValue] = useState<string>("");
+  const [isEditing, setIsEditing] = useState<boolean>(false);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
   const [loader, setLoader] = useState<boolean>(false);
   const { loadPage, setLoadPage } = useAppContext();
@@ -49,28 +50,22 @@ const TransportPageContainer = () => {
 
   const onEdit = async (id: number) => {
     setLoader(true);
-    const data = await AdminApi.getProduct("transport", id);
+    setIsEditing(true);
 
+    const data = await AdminApi.getProduct("transport", id);
     if (data) {
-      const values = data.transports.map((el: TProducts) => ({
-        image: el.photo_preview,
-        title: el.title,
-        price: el.price,
-        category: el.category,
-        description: el.description,
-      }))[0];
-      setOldValues(values);
+      const { photo_preview: image, title, price, category, description } = data.transports[0];
+      setOldValues({ image, title, price, category, description });
     }
-    setLoadPage(!loadPage);
+
+    setIsEditing(false);
     setLoader(false);
   };
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
-    debounceRef.current = setTimeout(() => {
-      getProducts(currentPage);
-    }, 300);
+    debounceRef.current = setTimeout(() => getProducts(currentPage), 300);
 
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -87,11 +82,11 @@ const TransportPageContainer = () => {
         products={products}
         totalPages={totalPages}
         currentPage={currentPage}
-        titleValue={oldValues.title}
-        priceValue={oldValues.price}
-        categoryValue={oldValues.category}
-        descriptionValue={oldValues.description}
-        imageValue={oldValues.image}
+        titleValue={isEditing ? "" : oldValues.title}
+        priceValue={isEditing ? "" : oldValues.price}
+        categoryValue={isEditing ? "" : oldValues.category}
+        descriptionValue={isEditing ? "" : oldValues.description}
+        imageValue={isEditing ? "" : oldValues.image}
         setCurrentPage={setCurrentPage}
         setSearchValue={setSearchValue}
         onDelete={onDelete}
