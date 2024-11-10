@@ -2,7 +2,7 @@ import { CiSearch } from "react-icons/ci";
 import { TPages } from "../../types/types.data";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { FaRegEdit } from "react-icons/fa";
-import { Pagination } from "@mui/material";
+import Pagination from "@mui/material/Pagination/Pagination";
 import { useState } from "react";
 import AddProductModal from "./modal/AddProductModal";
 
