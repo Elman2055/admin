@@ -40,15 +40,14 @@ const AddProductModal = ({
 
     if (!isEdit) {
       const data = await AdminApi.onAddProducts(`${activeBtn === 0 ? "transport" : activeBtn === 1 ? "blog" : "spares"}`,formData);
-      if (!data.success) setError(data.message);
+      data.success ? setIsOpen(false) : setError(data.message);
     } else {
       const data = await AdminApi.onEdit(`${activeBtn === 0 ? "transport" : activeBtn === 1 ? "blog" : "spares"}`,editID as number,formData);
-      if (!data.success) setError(data.message);
+      data.success ? setIsOpen(false) : setError(data.message);
     }
 
     setLoadPage(!loadPage);
     setLoader(false);
-    setIsOpen(false);
     setImages([]);
     target.reset();
   };
