@@ -21,6 +21,9 @@ const TransportPageContainer = () => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
   const [loader, setLoader] = useState<boolean>(false);
+  const [isConfirm, setIsConfirm] = useState<boolean>(false);
+  const [confirmText, setConfirmText] = useState<string>("");
+  const [currentId, setCurrentId] = useState<number>(0);
   const { loadPage, setLoadPage } = useAppContext();
 
   const getProducts = async (page: number) => {
@@ -41,11 +44,12 @@ const TransportPageContainer = () => {
     setLoader(false);
   };
 
-  const onDelete = async (id: number) => {
+  const onDelete = async () => {
     setLoader(true);
-    await AdminApi.onDelete("transport", id);
+    await AdminApi.onDelete("transport", currentId);
     setLoadPage(!loadPage);
     setLoader(false);
+    setIsConfirm(false);
   };
 
   const onEdit = async (id: number) => {
@@ -87,10 +91,14 @@ const TransportPageContainer = () => {
         categoryValue={isEditing ? "" : oldValues.category}
         descriptionValue={isEditing ? "" : oldValues.description}
         imageValue={isEditing ? "" : oldValues.image}
+        isConfirm={isConfirm}
+        confirmText={confirmText}
         setCurrentPage={setCurrentPage}
         setSearchValue={setSearchValue}
-        onDelete={onDelete}
+        onDelete={(id) => { setConfirmText("Вы действительно хотите удалить продукт ?"); setIsConfirm(true); setCurrentId(id); }}
         onEdit={onEdit}
+        onConfirm={onDelete}
+        onCancel={() => setIsConfirm(false)}
       />
     </>
   );
