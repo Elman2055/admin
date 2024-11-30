@@ -27,6 +27,17 @@ export type TProducts = {
   category?: string;
 };
 
+export type TCategories = {
+  id: number,
+  title: string,
+  type: string
+};
+
+export type TTypes = {
+  name: string,
+  slug: string
+}
+
 export type TPages = {
   title?: string;
   quantity: number;

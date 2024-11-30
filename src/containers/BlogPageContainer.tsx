@@ -37,7 +37,7 @@ const BlogPageContainer = () => {
       } catch (e) {
         setLoader(false);
       }
-    } 
+    }
     setLoader(false);
   };
 
