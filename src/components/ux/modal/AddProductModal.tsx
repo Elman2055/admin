@@ -1,7 +1,7 @@
 import { FaTimes } from "react-icons/fa";
 import { CiImageOn } from "react-icons/ci";
-import { useState } from "react";
-import { TAddModal } from "../../../types/types.data";
+import { useEffect, useState } from "react";
+import { TAddModal, TCategories } from "../../../types/types.data";
 import AdminApi from "../../../services/adminApi";
 import { useAppContext } from "../../AppContext";
 import Loader from "../../ui/Loader";
@@ -11,7 +11,6 @@ const AddProductModal = ({
   setIsOpen,
   titleValue,
   priceValue,
-  categoryValue,
   descriptionValue,
   imageValue,
   active,
@@ -19,10 +18,36 @@ const AddProductModal = ({
   editID,
 }: TAddModal) => {
   const [images, setImages] = useState<string[]>([]);
-  const [activeBtn, setActiveBtn] = useState<number>(active === "blog" ? 1 : active === "spares" ? 2 : 0);
+  const categories = [
+    { label: "Транспорт", value: "transport" },
+    { label: "Блог", value: "blog" },
+    { label: "Запчасти", value: "spares" }
+  ];
+
+  const [dropMenuCategories, setDropMenuCategories] = useState<TCategories[]>([]);
+  const [activeBtn, setActiveBtn] = useState<number>(categories.findIndex(c => c.value === active) || 0);
+
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [loader, setLoader] = useState<boolean>(false);
   const { loadPage, setLoadPage } = useAppContext();
+
+  useEffect(() => {
+    fetchCategories();
+  }, [activeBtn]);
+
+  const fetchCategories = async () => {
+    try {
+      const type = categories[activeBtn].value; // Get type based on active button
+      const responseJson = await AdminApi.getCategories('categories', type);
+
+      if (responseJson.success) {
+        setDropMenuCategories(responseJson.categories);
+      }
+    } catch (error) {
+      console.log("fetch categories: ", error);
+    }
+  }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -39,10 +64,10 @@ const AddProductModal = ({
     const formData = new FormData(target);
 
     if (!isEdit) {
-      const data = await AdminApi.onAddProducts(`${activeBtn === 0 ? "transport" : activeBtn === 1 ? "blog" : "spares"}`,formData);
+      const data = await AdminApi.onAddProducts(categories[activeBtn].value, formData);
       data.success ? setIsOpen(false) : setError(data.message);
     } else {
-      const data = await AdminApi.onEdit(`${activeBtn === 0 ? "transport" : activeBtn === 1 ? "blog" : "spares"}`,editID as number,formData);
+      const data = await AdminApi.onEdit(categories[activeBtn].value, editID as number, formData);
       data.success ? setIsOpen(false) : setError(data.message);
     }
 
@@ -70,19 +95,25 @@ const AddProductModal = ({
             />
             <p className="text-2xl desktop:text-3xl desktop2:text-4xl">Добавить запись</p>
             <div className="flex justify-center gap-3 my-4">
-              {["Транспорт", "Блог", "Запчасти"].map((el, index) => (
+              {categories.map((category, index) => (
                 <button
                   key={index}
                   className={`px-3 py-1 text-black bg-white desktop2:text-xl rounded-lg ${activeBtn === index ? "" : "opacity-40"}`}
-                  onClick={() => setActiveBtn(index)}
+                  onClick={() => {
+                    setActiveBtn(index);
+                    if (index !== 1) { // Reset selected category if Blog is selected
+                      setSelectedCategory("");
+                    }
+                  }}
                 >
-                  {el}
+                  {category.label}
                 </button>
               ))}
             </div>
             <form className="flex flex-col gap-3" onSubmit={onSubmit}>
+              {/* Image Upload Section */}
               <div
-                className={`w-[35vw] desktop:w-[27vw] h-[25vh] border-2 border-white rounded-lg flex items-center justify-center cursor-pointer mb-5 relative ${images.length > 0 || imageValue? "border-none": "border-dashed"}`}>
+                className={`w-[35vw] desktop:w-[27vw] h-[25vh] border-2 border-white rounded-lg flex items-center justify-center cursor-pointer mb-5 relative ${images.length > 0 || imageValue ? "border-none" : "border-dashed"}`}>
                 {images.length > 0 || imageValue ? (
                   <>
                     {images.length > 0 ? (
@@ -113,17 +144,38 @@ const AddProductModal = ({
                   onChange={handleFileChange}
                 />
               </div>
-              {(activeBtn !== 1 ? ["title", "price", "category", "description"] : ["title", "description"]).map((el, index) => (
+
+              {/* Dynamic Category Dropdown */}
+              {(activeBtn === 0 || activeBtn === 2) && (
+                <select
+                  name="category"
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="bg-transparent border-b-2 border-gray-500 focus:border-white outline-none desktop2:text-xl py-1"
+                >
+                  <option value="" disabled>Выберите категорию</option>
+                  {dropMenuCategories.map((cat) => (
+                    <option key={cat.id} value={cat.title}>{cat.title}</option>
+                  ))}
+                </select>
+              )}
+
+              {/* Input Fields */}
+              {(activeBtn !== 1 ? ["title", "price", "description"] : ["title", "description"]).map((el, index) => (
                 <input
                   key={index}
                   type="text"
                   name={el}
-                  placeholder={el === "title"? "Название": el === "price"? "Цена": el === "category"? "Категория": "Описание"}
-                  defaultValue={el === "title"? titleValue: el === "price"? priceValue: el === "category"? categoryValue: descriptionValue}
+                  placeholder={el === "title" ? "Название" : el === "price" ? "Цена" : "Описание"}
+                  defaultValue={el === "title" ? titleValue : el === "price" ? priceValue : descriptionValue}
                   className={`bg-transparent border-b-2 border-gray-500 focus:border-white outline-none desktop2:text-xl py-1 ${el === "description" ? "pb-10" : ""}`}
                 />
               ))}
+
+              {/* Error Message */}
               {error && (<p className="text-red-500 desktop2:text-xl text-center">{error}</p>)}
+
+              {/* Submit Button */}
               <button type="submit" className="bg-white text-black py-2 desktop2:text-xl">
                 {isEdit ? "Редактировать" : "Добавить"}
               </button>

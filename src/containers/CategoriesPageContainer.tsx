@@ -17,7 +17,7 @@ function CategoriesPageContainer() {
 
   useEffect(() => {
     fetchAllCategories();
-  }, []);
+  }, [selectedType]);
 
   const fetchAllCategories = async () => {
     try {
@@ -47,6 +47,7 @@ function CategoriesPageContainer() {
 
       if (responseJson.success)
         fetchAllCategories();
+      onChangeTitle('');
     } catch (error) {
       console.log('fetch add category: ', error);
     }
@@ -62,8 +63,7 @@ function CategoriesPageContainer() {
     } catch (error) {
       console.log('delete category: ', error);
     }
-  }
-
+  };
 
   return (
     <>

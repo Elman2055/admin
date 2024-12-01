@@ -20,6 +20,7 @@ const MenuModal = ({ isOpen, setIsOpen, onOpenAddModal }: TMenuModal) => {
               <p className="cursor-pointer hover:text-gray-300" onClick={() => navigate('/admin/spares')}>Запчасти</p>
               <p className="cursor-pointer hover:text-gray-300" onClick={() => navigate('/admin/blog')}>Блог</p>
               <p className="cursor-pointer hover:text-gray-300" onClick={() => navigate('/admin/categories')}>Категории</p>
+              <p className="cursor-pointer hover:text-gray-300" onClick={() => navigate('/admin/prices')}>Цены</p>
             </div>
           </div>
         </div>

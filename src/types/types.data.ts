@@ -36,6 +36,12 @@ export type TCategories = {
 export type TTypes = {
   name: string,
   slug: string
+};
+
+export type TPriceField = {
+  title: string,
+  price: number,
+  description: string
 }
 
 export type TPages = {
@@ -56,3 +62,19 @@ export type TPages = {
   onDelete: (id: number) => void;
   onEdit: (id: number) => void;
 };
+
+export type TPriceFormProps = {
+  setTab: (tab: number) => void;
+};
+
+export type TPriceCard = {
+  onDelete: (id: number) => void;
+  data: TPrice;
+};
+
+export type TPrice = {
+  id: number,
+  title: string,
+  price: number,
+  description: string
+}

@@ -91,7 +91,7 @@ const PageList = ({
             <Pagination
               count={totalPages}
               page={currentPage}
-              onChange={(event, value) => setCurrentPage(value)}
+              onChange={(_, value) => setCurrentPage(value)}
               size={window.innerWidth > 1024 ? "medium" : "small"}
               shape="rounded"
               sx={{
@@ -102,7 +102,7 @@ const PageList = ({
               }}
             />
           </div>
-          )}
+        )}
       </div>
     </>
   );
