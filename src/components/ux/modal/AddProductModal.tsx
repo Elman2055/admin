@@ -5,6 +5,7 @@ import { TAddModal, TCategories } from "../../../types/types.data";
 import AdminApi from "../../../services/adminApi";
 import { useAppContext } from "../../AppContext";
 import Loader from "../../ui/Loader";
+import ConfirmationModal from "./ConfirmModal";
 
 const AddProductModal = ({
   isOpen,
@@ -30,6 +31,8 @@ const AddProductModal = ({
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [loader, setLoader] = useState<boolean>(false);
+  const [isConfirm, setIsConfirm] = useState<boolean>(false);
+  const [editFormData, setEditFormData] = useState<FormData | null>(null);
   const { loadPage, setLoadPage } = useAppContext();
 
   useEffect(() => {
@@ -62,13 +65,13 @@ const AddProductModal = ({
 
     const target = e.currentTarget;
     const formData = new FormData(target);
+    setEditFormData(formData);
 
     if (!isEdit) {
-      const data = await AdminApi.onAddProducts(categories[activeBtn].value, formData);
+      const data = await AdminApi.onAddProducts( `${ activeBtn === 0 ? "transport" : activeBtn === 1 ? "blog" : "spares" }`, formData );
       data.success ? setIsOpen(false) : setError(data.message);
     } else {
-      const data = await AdminApi.onEdit(categories[activeBtn].value, editID as number, formData);
-      data.success ? setIsOpen(false) : setError(data.message);
+      setIsConfirm(true);
     }
 
     setLoadPage(!loadPage);
@@ -77,111 +80,82 @@ const AddProductModal = ({
     target.reset();
   };
 
+  const onConfirmEdit = async () => {
+    setLoader(true);
+    const data = await AdminApi.onEdit( `${activeBtn === 0 ? "transport" : activeBtn === 1 ? "blog" : "spares"}`, editID as number, editFormData as FormData );
+    data.success ? setIsOpen(false) : setError(data.message);
+    setIsConfirm(false);
+    setLoadPage(!loadPage);
+    setLoader(false);
+  };
+
   return (
     <>
       <Loader isOpen={loader} />
       {isOpen && (
-        <div
-          className="fixed top-0 w-full h-[100vh] flex justify-center items-center bg-black bg-opacity-50 backdrop-blur-sm font-jost z-20"
-          onClick={() => setIsOpen(false)}
-        >
+        <>
+          <ConfirmationModal isOpen={isConfirm} text="Вы действительно хотите изменить продукт?" onConfirm={() => onConfirmEdit()} onCancel={() => setIsConfirm(false)} />
           <div
-            className="bg-[#141414] p-5 text-white relative flex flex-col items-center"
-            onClick={(e) => e.stopPropagation()}
+            className="fixed top-0 w-full h-[100vh] flex justify-center items-center bg-black bg-opacity-50 backdrop-blur-sm font-jost z-20"
+            onClick={() => setIsOpen(false)}
           >
-            <FaTimes
-              className=" absolute top-6 left-5 text-2xl desktop:text-3xl desktop2:text-4xl cursor-pointer"
-              onClick={() => setIsOpen(false)}
-            />
-            <p className="text-2xl desktop:text-3xl desktop2:text-4xl">Добавить запись</p>
-            <div className="flex justify-center gap-3 my-4">
-              {categories.map((category, index) => (
-                <button
-                  key={index}
-                  className={`px-3 py-1 text-black bg-white desktop2:text-xl rounded-lg ${activeBtn === index ? "" : "opacity-40"}`}
-                  onClick={() => {
-                    setActiveBtn(index);
-                    if (index !== 1) { // Reset selected category if Blog is selected
-                      setSelectedCategory("");
-                    }
-                  }}
-                >
-                  {category.label}
-                </button>
-              ))}
-            </div>
-            <form className="flex flex-col gap-3" onSubmit={onSubmit}>
-              {/* Image Upload Section */}
-              <div
-                className={`w-[35vw] desktop:w-[27vw] h-[25vh] border-2 border-white rounded-lg flex items-center justify-center cursor-pointer mb-5 relative ${images.length > 0 || imageValue ? "border-none" : "border-dashed"}`}>
-                {images.length > 0 || imageValue ? (
-                  <>
-                    {images.length > 0 ? (
-                      images.map((image, index) => (
-                        <img
-                          key={index}
-                          src={image}
-                          alt={`Uploaded ${index}`}
-                          className="w-full h-full object-cover rounded-lg"
-                        />
-                      ))
-                    ) : (
-                      <img
-                        src={`https://batyssp.kz/api/v1/${active}/preview/${imageValue}`}
-                        alt="product"
-                        className="w-full h-full object-cover rounded-lg"
-                      />
-                    )}
-                  </>
-                ) : (
-                  <div className="bg-white rounded-full p-3"><CiImageOn className="text-4xl text-gray-400" /></div>
-                )}
-                <input
-                  type="file"
-                  accept="image/*"
-                  name="image"
-                  className="absolute inset-0 opacity-0 cursor-pointer"
-                  onChange={handleFileChange}
-                />
+            <div
+              className="bg-[#141414] p-5 text-white relative flex flex-col items-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <FaTimes
+                className="absolute top-6 left-5 text-2xl desktop:text-3xl desktop2:text-4xl cursor-pointer"
+                onClick={() => setIsOpen(false)}
+              />
+              <p className="text-2xl desktop:text-3xl desktop2:text-4xl">
+                {isEdit ? "Редактировать запись" : "Добавить запись"}
+              </p>
+              <div className="flex justify-center gap-3 my-4">
+                {["Транспорт", "Блог", "Запчасти"].map((el, index) => (
+                  <button
+                    key={index}
+                    className={`px-3 py-1 text-black bg-white desktop2:text-xl rounded-lg ${activeBtn === index ? "" : "opacity-40"}`}
+                    onClick={() => setActiveBtn(index)}
+                  >
+                    {el}
+                  </button>
+                ))}
               </div>
-
-              {/* Dynamic Category Dropdown */}
-              {(activeBtn === 0 || activeBtn === 2) && (
-                <select
-                  name="category"
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="bg-transparent border-b-2 border-gray-500 focus:border-white outline-none desktop2:text-xl py-1"
-                >
-                  <option value="" disabled>Выберите категорию</option>
-                  {dropMenuCategories.map((cat) => (
-                    <option key={cat.id} value={cat.title}>{cat.title}</option>
-                  ))}
-                </select>
-              )}
-
-              {/* Input Fields */}
-              {(activeBtn !== 1 ? ["title", "price", "description"] : ["title", "description"]).map((el, index) => (
-                <input
-                  key={index}
-                  type="text"
-                  name={el}
-                  placeholder={el === "title" ? "Название" : el === "price" ? "Цена" : "Описание"}
-                  defaultValue={el === "title" ? titleValue : el === "price" ? priceValue : descriptionValue}
-                  className={`bg-transparent border-b-2 border-gray-500 focus:border-white outline-none desktop2:text-xl py-1 ${el === "description" ? "pb-10" : ""}`}
-                />
-              ))}
-
-              {/* Error Message */}
-              {error && (<p className="text-red-500 desktop2:text-xl text-center">{error}</p>)}
-
-              {/* Submit Button */}
-              <button type="submit" className="bg-white text-black py-2 desktop2:text-xl">
-                {isEdit ? "Редактировать" : "Добавить"}
-              </button>
-            </form>
+              <form className="flex flex-col gap-3" onSubmit={onSubmit}>
+                <div className={`w-[35vw] desktop:w-[27vw] h-[25vh] border-2 border-white rounded-lg flex items-center justify-center cursor-pointer mb-5 relative ${ images.length > 0 || imageValue ? "border-none" : "border-dashed" }`} >
+                  {images.length > 0 || imageValue ? (
+                    <>
+                      {images.length > 0 ? (
+                        images.map((image, index) => (
+                          <img key={index} src={image} alt={`Uploaded ${index}`} className="w-full h-full object-cover rounded-lg" />
+                        ))
+                      ) : (
+                        <img src={`https://batyssp.kz/api/v1/${active}/preview/${imageValue}`} alt="product" className="w-full h-full object-cover rounded-lg" />
+                      )}
+                    </>
+                  ) : (
+                    <div className="bg-white rounded-full p-3"><CiImageOn className="text-4xl text-gray-400" /></div>
+                  )}
+                  <input type="file" accept="image/*" name="image" className="absolute inset-0 opacity-0 cursor-pointer" onChange={handleFileChange} />
+                </div>
+                {(activeBtn !== 1 ? ["title", "price", "category", "description"] : ["title", "description"] ).map((el, index) => (
+                  <input
+                    key={index}
+                    type="text"
+                    name={el}
+                    placeholder={ el === "title" ? "Название" : el === "price" ? "Цена" : el === "category" ? "Категория" : "Описание" }
+                    defaultValue={el === "title"? titleValue: el === "price"? priceValue: el === "category"? categoryValue: descriptionValue}
+                    className={`bg-transparent border-b-2 border-gray-500 focus:border-white outline-none desktop2:text-xl py-1 ${el === "description" ? "pb-10" : ""}`}
+                  />
+                ))}
+                {error && ( <p className="text-red-500 desktop2:text-xl text-center"> {error} </p> )}
+                <button type="submit" className="bg-white text-black py-2 desktop2:text-xl" >
+                  {isEdit ? "Редактировать" : "Добавить"}
+                </button>
+              </form>
+            </div>
           </div>
-        </div>
+        </>
       )}
     </>
   );

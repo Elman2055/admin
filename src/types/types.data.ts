@@ -67,22 +67,6 @@ export type TPages = {
   onCancel: () => void;
 };
 
-export type TPriceFormProps = {
-  setTab: (tab: number) => void;
-};
-
-export type TPriceCard = {
-  onDelete: (id: number) => void;
-  data: TPrice;
-};
-
-export type TPrice = {
-  id: number,
-  title: string,
-  price: number,
-  description: string
-};
-
 export type TConfirmationModalProps = {
   isOpen: boolean;
   text: string;
@@ -91,6 +75,6 @@ export type TConfirmationModalProps = {
 };
 
 export const mockEvent = {
-  preventDefault: () => { },
+  preventDefault: () => {},
   currentTarget: document.createElement("form"),
 } as React.ChangeEvent<HTMLFormElement>;
