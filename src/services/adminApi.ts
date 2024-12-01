@@ -37,6 +37,7 @@ class AdminApi {
   static getProducts = async (link: string, page: number) => {
     try {
       const url = `${AdminApi.API_BASE_URL}/${link}/list/${page}`;
+      console.log("url products: ", url);
       const response = await fetch(url);
       const data = await response.json();
 
@@ -90,11 +91,9 @@ class AdminApi {
 
   static onDelete = async (link: string, id: number) => {
     const url = `${AdminApi.API_BASE_URL}/${link}/${id}`;
+    console.log("delete: ", url);
     const response = await fetch(url, {
       method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${AdminApi.getToken()}`,
-      },
     });
     const data = await response.json();
 

@@ -1,10 +1,11 @@
 import { CiSearch } from "react-icons/ci";
 import { TPages } from "../../types/types.data";
-import { RiDeleteBin6Line } from "react-icons/ri";
+import { AiFillDelete } from "react-icons/ai";
 import { FaRegEdit } from "react-icons/fa";
 import Pagination from "@mui/material/Pagination/Pagination";
 import { useState } from "react";
 import AddProductModal from "./modal/AddProductModal";
+import ConfirmationModal from "./modal/ConfirmModal";
 
 const PageList = ({
   title,
@@ -19,10 +20,14 @@ const PageList = ({
   categoryValue,
   descriptionValue,
   imageValue,
+  isConfirm,
+  confirmText,
   setCurrentPage,
   setSearchValue,
   onDelete,
   onEdit,
+  onConfirm,
+  onCancel,
 }: TPages) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [editId, setEditId] = useState<number>();
@@ -41,10 +46,18 @@ const PageList = ({
         editID={editId}
         isEdit={editId ? true : false}
       />
+      <ConfirmationModal
+        isOpen={isConfirm}
+        text={confirmText}
+        onConfirm={onConfirm}
+        onCancel={onCancel}
+      />
       <div className="w-[90%] desktop:w-[75%] mx-auto font-jost">
         <p className="text-center text-white text-2xl desktop2:text-4xl">
           {title}
-          <span className="text-gray-400 text-base desktop:text-xl ml-2">всего {quantity} шт.</span>
+          <span className="text-gray-400 text-base desktop:text-xl ml-2">
+            всего {quantity} шт.
+          </span>
         </p>
         <div className="flex justify-center my-5">
           <div className="w-[30%] relative">
@@ -59,7 +72,7 @@ const PageList = ({
         </div>
         <div className="grid grid-cols-3 gap-4">
           {products.map((el) => (
-            <div key={el.id} className="relative text-white">
+            <div key={el.id} className="relative text-[#4bdf46]">
               <img
                 src={`https://batyssp.kz/api/v1/${image}/preview/${el.photo_preview}`}
                 alt="product"
@@ -67,12 +80,25 @@ const PageList = ({
               />
               <div className="w-[90%] absolute bottom-4 flex justify-between items-end ml-[5%]">
                 <div>
-                  <p className="text-base desktop:text-lg desktop2:text-2xl font-bold">{el.title}</p>
-                  {isDate && (<p className="text-sm desktop:text-base desktop2:text-lg">{new Date(el.date).toLocaleString()}</p>)}
-                  {!isDate && (<p className="text-sm desktop:text-base desktop2:text-lg">{el.price} тг</p>)}
+                  <p className="text-lg desktop:text-xl desktop2:text-3xl font-bold">
+                    {el.title}
+                  </p>
+                  {isDate && (
+                    <p className="text-base desktop:text-xl desktop2:text-2xl font-bold">
+                      {new Date(el.date).toLocaleString()}
+                    </p>
+                  )}
+                  {!isDate && (
+                    <p className="text-base desktop:text-xl desktop2:text-2xl">
+                      {el.price} тг
+                    </p>
+                  )}
                 </div>
-                <div className="flex gap-4 text-lg desktop:text-xl desktop2:text-3xl mb-2">
-                  <RiDeleteBin6Line className="cursor-pointer" onClick={() => onDelete(el.id)} />
+                <div className="flex gap-4 text-lg desktop:text-3xl desktop2:text-4xl mb-2">
+                  <AiFillDelete
+                    className="cursor-pointer mr-4"
+                    onClick={() => onDelete(el.id)}
+                  />
                   <FaRegEdit
                     className="cursor-pointer"
                     onClick={() => {
@@ -97,8 +123,10 @@ const PageList = ({
               sx={{
                 "& .MuiPaginationItem-root:not(.Mui-selected):not(.Mui-disabled), & .MuiPaginationItem-root.Mui-disabled":
                   { border: "1px solid white", color: "grey.500" },
-                "& .MuiPaginationItem-root.Mui-selected":
-                  { backgroundColor: "white", color: "black", },
+                "& .MuiPaginationItem-root.Mui-selected": {
+                  backgroundColor: "white",
+                  color: "black",
+                },
               }}
             />
           </div>

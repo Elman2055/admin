@@ -57,10 +57,14 @@ export type TPages = {
   categoryValue: string;
   descriptionValue: string;
   imageValue?: string;
+  isConfirm: boolean;
+  confirmText: string;
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
   setSearchValue: React.Dispatch<React.SetStateAction<string>>;
   onDelete: (id: number) => void;
   onEdit: (id: number) => void;
+  onConfirm: () => void;
+  onCancel: () => void;
 };
 
 export type TPriceFormProps = {
@@ -77,4 +81,16 @@ export type TPrice = {
   title: string,
   price: number,
   description: string
-}
+};
+
+export type TConfirmationModalProps = {
+  isOpen: boolean;
+  text: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+};
+
+export const mockEvent = {
+  preventDefault: () => { },
+  currentTarget: document.createElement("form"),
+} as React.ChangeEvent<HTMLFormElement>;
